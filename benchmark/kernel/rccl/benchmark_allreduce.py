@@ -150,7 +150,8 @@ def benchmark(test_func, output_csv_path, rank, local_rank, world_size, dry_run=
 
     for model_name, (seq, hidden) in MODEL_PARAMS_TABLE.items():
         for mbs in MBS_LIST:
-            print(f"\nModel Name {model_name}, mbs {mbs}")
+            if rank == 0:
+                print(f"\nModel Name {model_name}, mbs {mbs}")
             for dtype in [torch.float16]:
                 avg_time, bandwidth = test_func(
                     mbs, seq, hidden, dtype, rank, local_rank, world_size, dry_run
