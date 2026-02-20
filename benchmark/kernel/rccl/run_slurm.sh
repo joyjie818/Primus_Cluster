@@ -12,6 +12,7 @@
 #   DOCKER_IMAGE=<image> NNODES=2 PARTITION=my-gpu sbatch run_slurm.sh
 #  DOCKER_IMAGE=rocm/primus:v25.11 NNODES=2 sbatch -N2 -w smci355-ccs-aus-n01-[29,33] -p Compute-DCPT slurm.sh 
 # DOCKER_IMAGE=rocm/primus:v25.11 NNODES=1 sbatch -N1 -w smci355-ccs-aus-n01-29 -p Compute-DCPT slurm.sh 
+# DOCKER_IMAGE=rocm/megatron-lm:v25.6_py310 NNODES=2 sbatch -N2 -w smci355-ccs-aus-n01-[29,33] -p Compute-DCPT slurm.sh
 # Environment variables (all optional except DOCKER_IMAGE):
 #   DOCKER_IMAGE        Docker image to use (required)
 #   NNODES              Number of nodes [default: 1]
@@ -57,6 +58,12 @@ echo "  GPUS_PER_NODE : ${GPUS_PER_NODE}"
 echo "  MASTER_PORT   : ${MASTER_PORT}"
 echo "  OUTPUT_DIR    : ${OUTPUT_DIR}"
 echo "============================================"
+srun -N "${NNODES}" \
+     --exclusive \
+     --export=ALL \
+     --ntasks-per-node=1 \
+     "${SBATCH_OVERRIDES[@]}" \
+     bash -c 'docker pull "${DOCKER_IMAGE}";docker stop $(docker ps -q)'
 
 srun -N "${NNODES}" \
      --exclusive \
