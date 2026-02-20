@@ -94,7 +94,7 @@ NNODES='"${NNODES}"'
 GPUS_PER_NODE='"${GPUS_PER_NODE}"'
 MASTER_PORT='"${MASTER_PORT}"'
 EXTRA_DOCKER_ARGS='"${EXTRA_DOCKER_ARGS:-}"'
-docker stop $(docker ps -q)
+rocm-smi
 
 docker run --rm \
     --network=host \
@@ -118,6 +118,7 @@ docker run --rm \
         # set -euo pipefail
         cd ${SCRIPT_DIR}
         ifconfig
+        rocm-smi
 
         export TORCH_NCCL_HIGH_PRIORITY=1
         # export NCCL_CHECKS_DISABLE=1
