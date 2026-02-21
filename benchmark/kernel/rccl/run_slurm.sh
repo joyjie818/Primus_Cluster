@@ -10,9 +10,9 @@
 # Usage:
 #   DOCKER_IMAGE=<image> sbatch run_slurm.sh
 #   DOCKER_IMAGE=<image> NNODES=2 PARTITION=my-gpu sbatch run_slurm.sh
-#  DOCKER_IMAGE=rocm/primus:v25.11 NNODES=2 sbatch -N2 -w smci355-ccs-aus-n01-[29,33] -p Compute-DCPT slurm.sh 
-# DOCKER_IMAGE=rocm/primus:v25.11 NNODES=1 sbatch -N1 -w smci355-ccs-aus-n01-29 -p Compute-DCPT slurm.sh 
-# DOCKER_IMAGE=rocm/megatron-lm:v25.6_py310 NNODES=2 sbatch -N2 -w smci355-ccs-aus-n01-[29,33] -p Compute-DCPT slurm.sh
+#  DOCKER_IMAGE=rocm/primus:v25.11 NNODES=2 sbatch -N2 -w smci355-ccs-aus-n01-[29,33] -p Compute-DCPT run_slurm.sh
+# DOCKER_IMAGE=rocm/primus:v25.11 NNODES=1 sbatch -N1 -w smci355-ccs-aus-n01-29 -p Compute-DCPT run_slurm.sh
+
 # Environment variables (all optional except DOCKER_IMAGE):
 #   DOCKER_IMAGE        Docker image to use (required)
 #   NNODES              Number of nodes [default: 1]
@@ -75,7 +75,6 @@ srun -N "${NNODES}" \
 # ---- Resolve master address from Slurm node list ----
 readarray -t NODE_ARRAY < <(scontrol show hostnames "$SLURM_JOB_NODELIST")
 MASTER_ADDR="${NODE_ARRAY[0]}"
-MASTER_ADDR="10.235.192.54"
 NODE_RANK="${SLURM_NODEID}"
 
 if [[ "$NODE_RANK" == "0" ]]; then
@@ -94,7 +93,6 @@ NNODES='"${NNODES}"'
 GPUS_PER_NODE='"${GPUS_PER_NODE}"'
 MASTER_PORT='"${MASTER_PORT}"'
 EXTRA_DOCKER_ARGS='"${EXTRA_DOCKER_ARGS:-}"'
-rocm-smi
 
 docker run --rm \
     --network=host \
@@ -151,8 +149,4 @@ docker run --rm \
     "
 '
 
-echo ""
-echo "============================================"
-echo " All benchmarks finished."
 echo " Results written to: ${OUTPUT_DIR}/"
-echo "============================================"
